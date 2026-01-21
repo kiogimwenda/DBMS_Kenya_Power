@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Kenya Power - Electrical Systems Management{% endblock %}
+
+{% block public_content %}
+<div class="min-vh-100 d-flex flex-column">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <i class="bi bi-lightning-charge-fill me-2"></i>
+        Kenya Power
+      </a>
+      <a href="{{ url_for('customer.login') }}" class="btn btn-outline-light me-2">Customer Portal</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-light">Staff Login</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="bg-primary text-white py-5">
+    <div class="container py-5">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="display-4 fw-bold mb-4">Electrical Systems Management</h1>
+          <p class="lead mb-4">Efficiently manage electricity distribution, handle fault reports, schedule maintenance, and deliver reliable service to customers across Kenya.</p>
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-lg">
+              <i class="bi bi-building"></i> Staff Portal
+            </a>
+            <a href="{{ url_for('customer.login') }}" class="btn btn-outline-light btn-lg">
+              <i class="bi bi-person"></i> Customer Portal
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-6 text-center">
+          <i class="bi bi-lightning-charge" style="font-size: 15rem; opacity: 0.3;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="container py-5">
+    <h2 class="text-center mb-5">System Features</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body text-center p-4">
+            <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+              <i class="bi bi-people text-primary" style="font-size: 2rem;"></i>
+            </div>
+            <h5>Customer Management</h5>
+            <p class="text-muted">Track customer connections, manage service requests, and maintain comprehensive customer records.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body text-center p-4">
+            <div class="rounded-circle bg-danger bg-opacity-10 p-3 d-inline-block mb-3">
+              <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
+            </div>
+            <h5>Fault Reporting</h5>
+            <p class="text-muted">Report and track faults in the distribution network with automated notifications and status updates.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body text-center p-4">
+            <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-inline-block mb-3">
+              <i class="bi bi-tools text-warning" style="font-size: 2rem;"></i>
+            </div>
+            <h5>Maintenance Scheduling</h5>
+            <p class="text-muted">Plan preventive maintenance, assign technicians, and track completion of maintenance tasks.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-4 mt-auto">
+    <div class="container text-center">
+      <p class="mb-0">&copy; 2026 Kenya Power. Electrical Systems Management Application.</p>
+    </div>
+  </footer>
+</div>
+{% endblock %}

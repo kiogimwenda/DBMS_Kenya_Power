@@ -1,0 +1,224 @@
+{% extends "customer/base.html" %}
+
+{% block title %}Dashboard - Kenya Power Customer Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">Dashboard</h4>
+        <p class="text-muted mb-0">Welcome back, {{ customer.full_name }}</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value text-success">{{ active_connections }}</div>
+                        <div class="stat-label">Active Connections</div>
+                    </div>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-plug"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value text-warning">{{ pending_faults }}</div>
+                        <div class="stat-label">Pending Faults</div>
+                    </div>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value text-info">{{ pending_requests }}</div>
+                        <div class="stat-label">Pending Requests</div>
+                    </div>
+                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-file-text"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-value text-primary">{{ unread_notifications }}</div>
+                        <div class="stat-label">Unread Notifications</div>
+                    </div>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-bell"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-2">
+                        <a href="{{ url_for('customer.report_fault') }}" class="btn btn-outline-warning w-100">
+                            <i class="bi bi-exclamation-triangle"></i><br>
+                            Report Fault
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <a href="{{ url_for('customer.new_request') }}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-file-plus"></i><br>
+                            New Request
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <a href="{{ url_for('customer.support') }}" class="btn btn-outline-success w-100">
+                            <i class="bi bi-chat-dots"></i><br>
+                            Contact Support
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <a href="{{ url_for('customer.my_connections') }}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-plug"></i><br>
+                            My Connections
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <!-- Recent Faults -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Recent Faults</h6>
+                <a href="{{ url_for('customer.my_faults') }}" class="btn btn-sm btn-link">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_faults %}
+                <div class="list-group list-group-flush">
+                    {% for fault in recent_faults %}
+                    <a href="{{ url_for('customer.view_fault', fault_id=fault.fault_id) }}"
+                       class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>#{{ fault.fault_id }}</strong> - {{ fault.fault_type|replace('_', ' ')|title }}
+                                <br>
+                                <small class="text-muted">{{ fault.reported_date.strftime('%b %d, %Y') }}</small>
+                            </div>
+                            <span class="badge badge-status status-{{ fault.status }}">
+                                {{ fault.status|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-check-circle fs-2"></i>
+                    <p class="mb-0">No faults reported</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Requests -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-file-text"></i> Recent Requests</h6>
+                <a href="{{ url_for('customer.my_requests') }}" class="btn btn-sm btn-link">View All</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_requests %}
+                <div class="list-group list-group-flush">
+                    {% for req in recent_requests %}
+                    <a href="{{ url_for('customer.view_request', request_id=req.request_id) }}"
+                       class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>#{{ req.request_id }}</strong> - {{ req.request_type|replace('_', ' ')|title }}
+                                <br>
+                                <small class="text-muted">{{ req.submitted_date.strftime('%b %d, %Y') }}</small>
+                            </div>
+                            <span class="badge badge-status status-{{ req.status|replace('_', '-') }}">
+                                {{ req.status|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox fs-2"></i>
+                    <p class="mb-0">No service requests</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Information -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person"></i> Account Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted">Account Number</small>
+                        <p class="mb-0"><strong>{{ customer.account_number }}</strong></p>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted">Customer Type</small>
+                        <p class="mb-0"><strong>{{ customer.customer_type|title }}</strong></p>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted">Phone</small>
+                        <p class="mb-0"><strong>{{ customer.phone }}</strong></p>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <small class="text-muted">Email</small>
+                        <p class="mb-0"><strong>{{ customer.email or 'Not provided' }}</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

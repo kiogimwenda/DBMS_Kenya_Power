@@ -1,0 +1,200 @@
+{% extends "customer/base.html" %}
+
+{% block title %}Request #{{ request.request_id }} - Kenya Power Customer Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('customer.my_requests') }}">My Requests</a></li>
+                <li class="breadcrumb-item active">Request #{{ request.request_id }}</li>
+            </ol>
+        </nav>
+        <h4 class="mb-0">Service Request #{{ request.request_id }}</h4>
+    </div>
+    <span class="badge badge-status status-{{ request.status|replace('_', '-') }} fs-6">
+        {{ request.status|replace('_', ' ')|title }}
+    </span>
+</div>
+
+<div class="row">
+    <!-- Request Details -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-file-text"></i> Request Details</h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Request Type</small>
+                        <p class="mb-0 fs-5">{{ request.request_type|replace('_', ' ')|title }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Priority</small>
+                        <p class="mb-0">
+                            <span class="priority-{{ request.priority }}">
+                                <i class="bi bi-circle-fill"></i> {{ request.priority|title }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">Description</small>
+                    <p class="mb-0">{{ request.description or 'No description provided.' }}</p>
+                </div>
+
+                {% if request.connection %}
+                <div class="mb-3">
+                    <small class="text-muted">Related Connection</small>
+                    <p class="mb-0">
+                        <a href="{{ url_for('customer.view_connection', connection_id=request.connection.connection_id) }}">
+                            <i class="bi bi-plug"></i> {{ request.connection.meter_number }}
+                        </a>
+                        ({{ request.connection.connection_type|replace('_', ' ')|title }})
+                    </p>
+                </div>
+                {% endif %}
+
+                {% if request.resolution_notes %}
+                <div class="mt-4 p-3 bg-light rounded">
+                    <small class="text-muted">Resolution Notes</small>
+                    <p class="mb-0">{{ request.resolution_notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Status Progress -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-signpost-split"></i> Request Progress</h6>
+            </div>
+            <div class="card-body">
+                <div class="progress-steps">
+                    {% set statuses = ['submitted', 'under_review', 'approved', 'in_progress', 'completed'] %}
+                    {% set current_index = statuses.index(request.status) if request.status in statuses else -1 %}
+
+                    {% for status_item in statuses %}
+                    <div class="progress-step {% if loop.index0 <= current_index %}completed{% endif %} {% if loop.index0 == current_index %}current{% endif %}">
+                        <div class="step-circle">
+                            {% if loop.index0 < current_index %}
+                            <i class="bi bi-check"></i>
+                            {% else %}
+                            {{ loop.index }}
+                            {% endif %}
+                        </div>
+                        <div class="step-label">{{ status_item|replace('_', ' ')|title }}</div>
+                    </div>
+                    {% endfor %}
+
+                    {% if request.status == 'rejected' %}
+                    <div class="mt-3 text-center">
+                        <span class="badge bg-danger fs-6">
+                            <i class="bi bi-x-circle"></i> Request Rejected
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Dates -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-calendar"></i> Timeline</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Submitted On</small>
+                    <p class="mb-0">{{ request.submitted_date.strftime('%B %d, %Y at %H:%M') }}</p>
+                </div>
+
+                {% if request.resolved_date %}
+                <div class="mb-0">
+                    <small class="text-muted">Resolved On</small>
+                    <p class="mb-0">{{ request.resolved_date.strftime('%B %d, %Y at %H:%M') }}</p>
+                </div>
+                {% endif %}
+
+                {% if request.assignee %}
+                <div class="mt-3 pt-3 border-top">
+                    <small class="text-muted">Assigned To</small>
+                    <p class="mb-0">{{ request.assignee.full_name }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Help -->
+        <div class="card">
+            <div class="card-body">
+                <h6><i class="bi bi-question-circle"></i> Questions?</h6>
+                <p class="mb-2">If you have questions about this request:</p>
+                <a href="{{ url_for('customer.new_message') }}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-chat-dots"></i> Contact Support
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+.progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e9ecef;
+    z-index: 0;
+}
+.progress-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.progress-step.completed .step-circle {
+    background: #198754;
+    color: white;
+}
+.progress-step.current .step-circle {
+    background: #0d6efd;
+    color: white;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.25);
+}
+.step-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+.progress-step.completed .step-label,
+.progress-step.current .step-label {
+    color: #212529;
+    font-weight: 500;
+}
+</style>
+{% endblock %}

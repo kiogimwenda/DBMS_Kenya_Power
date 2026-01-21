@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Kenya Power Customer Portal{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/customer-portal.css') }}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="customer-portal">
+{% if customer %}
+<!-- Customer Portal Sidebar -->
+<div class="portal-sidebar" id="portalSidebar">
+    <div class="sidebar-header">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Kenya Power" class="logo" onerror="this.style.display='none'">
+        <h5 class="text-white mb-0">Kenya Power</h5>
+        <small class="text-light-green">Customer Portal</small>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="{{ url_for('customer.dashboard') }}" class="nav-link {% if request.endpoint == 'customer.dashboard' %}active{% endif %}">
+            <i class="bi bi-house-door"></i> Dashboard
+        </a>
+
+        <div class="nav-section">My Account</div>
+        <a href="{{ url_for('customer.my_connections') }}" class="nav-link {% if 'connection' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-plug"></i> My Connections
+        </a>
+        <a href="{{ url_for('customer.profile') }}" class="nav-link {% if 'profile' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-person"></i> Profile
+        </a>
+
+        <div class="nav-section">Services</div>
+        <a href="{{ url_for('customer.my_faults') }}" class="nav-link {% if 'fault' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-exclamation-triangle"></i> My Faults
+        </a>
+        <a href="{{ url_for('customer.report_fault') }}" class="nav-link">
+            <i class="bi bi-plus-circle"></i> Report Fault
+        </a>
+        <a href="{{ url_for('customer.my_requests') }}" class="nav-link {% if 'request' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-file-text"></i> Service Requests
+        </a>
+        <a href="{{ url_for('customer.new_request') }}" class="nav-link">
+            <i class="bi bi-plus-circle"></i> New Request
+        </a>
+
+        <div class="nav-section">Support</div>
+        <a href="{{ url_for('customer.support') }}" class="nav-link {% if 'support' in request.endpoint or 'message' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-chat-dots"></i> Customer Service
+        </a>
+        <a href="{{ url_for('customer.notifications') }}" class="nav-link {% if 'notification' in request.endpoint %}active{% endif %}">
+            <i class="bi bi-bell"></i> Notifications
+            {% set unread_count = customer.notifications|selectattr('is_read', 'false')|list|length if customer.notifications else 0 %}
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <i class="bi bi-person-circle"></i>
+            <div>
+                <small class="text-white">{{ customer.full_name }}</small>
+                <br>
+                <small class="text-muted">{{ customer.account_number }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="portal-main-content">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container-fluid">
+            <button class="btn btn-link" id="portalSidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+
+            <span class="navbar-text d-none d-md-block">
+                Welcome, {{ customer.first_name }}!
+            </span>
+
+            <div class="d-flex align-items-center">
+                <a href="{{ url_for('customer.notifications') }}" class="btn btn-link position-relative me-2">
+                    <i class="bi bi-bell fs-5"></i>
+                </a>
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle fs-5"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text"><strong>{{ customer.full_name }}</strong></span></li>
+                        <li><span class="dropdown-item-text text-muted">{{ customer.account_number }}</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('customer.profile') }}"><i class="bi bi-person"></i> Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('customer.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container-fluid">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </div>
+</div>
+{% else %}
+<!-- Public content for login/register pages -->
+{% block public_content %}{% endblock %}
+{% endif %}
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Portal sidebar toggle
+    document.getElementById('portalSidebarToggle')?.addEventListener('click', function() {
+        document.getElementById('portalSidebar').classList.toggle('collapsed');
+        document.querySelector('.portal-main-content').classList.toggle('expanded');
+    });
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
