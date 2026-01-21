@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python run.py:*)",
+      "Bash(cd D:ECE 4.1DBMSKenya_Power)",
+      "Bash(find:*)",
+      "Bash(dir /s \"D:\\\\ECE 4.1\\\\DBMS\\\\Kenya_Power\")",
+      "Bash(tree:*)"
+    ]
+  }
+}

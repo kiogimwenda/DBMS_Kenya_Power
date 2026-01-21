@@ -1,0 +1,79 @@
+{% extends "customer/base.html" %}
+
+{% block title %}New Message - Kenya Power Customer Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('customer.support') }}">Customer Support</a></li>
+                <li class="breadcrumb-item active">New Message</li>
+            </ol>
+        </nav>
+        <h4 class="mb-0">Send a Message</h4>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-envelope"></i> New Message to Customer Service</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('customer.new_message') }}">
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject *</label>
+                        <input type="text" class="form-control" id="subject" name="subject"
+                               placeholder="Enter a brief subject for your message" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="message" class="form-label">Message *</label>
+                        <textarea class="form-control" id="message" name="message" rows="6"
+                                  placeholder="Type your message here..." required></textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-send"></i> Send Message
+                        </button>
+                        <a href="{{ url_for('customer.support') }}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6><i class="bi bi-info-circle"></i> Tips</h6>
+                <ul class="mb-0 ps-3 small">
+                    <li class="mb-2">Include your account number if relevant</li>
+                    <li class="mb-2">Be specific about your issue or question</li>
+                    <li class="mb-2">Include any relevant reference numbers (fault IDs, request IDs)</li>
+                    <li>Our team typically responds within 1-2 business days</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6><i class="bi bi-lightning"></i> Quick Links</h6>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('customer.report_fault') }}" class="btn btn-outline-warning btn-sm">
+                        <i class="bi bi-exclamation-triangle"></i> Report a Fault
+                    </a>
+                    <a href="{{ url_for('customer.new_request') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-file-plus"></i> Service Request
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

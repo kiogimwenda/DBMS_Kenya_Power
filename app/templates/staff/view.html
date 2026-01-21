@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.full_name }} - Staff Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Staff Details</h4>
+  <div>
+    <a href="{{ url_for('staff.edit_staff', user_id=user.user_id) }}" class="btn btn-primary">
+      <i class="bi bi-pencil"></i> Edit
+    </a>
+    <a href="{{ url_for('staff.list_staff') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">{{ user.full_name }}</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-4 text-muted">Username</div>
+          <div class="col-md-8"><strong>{{ user.username }}</strong></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4 text-muted">Email</div>
+          <div class="col-md-8">{{ user.email }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4 text-muted">Phone</div>
+          <div class="col-md-8">{{ user.phone or 'Not provided' }}</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4 text-muted">Role</div>
+          <div class="col-md-8">
+            {% if user.role == 'customer_service' %}
+            <span class="badge bg-info">Customer Care Agent</span>
+            {% elif user.role == 'technician' %}
+            <span class="badge bg-warning text-dark">Technician</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4 text-muted">Status</div>
+          <div class="col-md-8">
+            {% if user.is_active %}
+            <span class="badge bg-success">Active</span>
+            {% else %}
+            <span class="badge bg-secondary">Inactive</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4 text-muted">Created</div>
+          <div class="col-md-8">{{ user.created_at.strftime('%B %d, %Y at %H:%M') if user.created_at else 'N/A' }}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 text-muted">Last Updated</div>
+          <div class="col-md-8">{{ user.updated_at.strftime('%B %d, %Y at %H:%M') if user.updated_at else 'N/A' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0">Quick Actions</h6>
+      </div>
+      <div class="card-body">
+        <form action="{{ url_for('staff.toggle_status', user_id=user.user_id) }}" method="POST">
+          {% if user.is_active %}
+          <button type="submit" class="btn btn-outline-danger w-100 mb-2"
+                  onclick="return confirm('Are you sure you want to deactivate this staff member?')">
+            <i class="bi bi-person-x"></i> Deactivate Account
+          </button>
+          {% else %}
+          <button type="submit" class="btn btn-outline-success w-100 mb-2"
+                  onclick="return confirm('Are you sure you want to activate this staff member?')">
+            <i class="bi bi-person-check"></i> Activate Account
+          </button>
+          {% endif %}
+        </form>
+        <a href="{{ url_for('staff.edit_staff', user_id=user.user_id) }}" class="btn btn-outline-primary w-100">
+          <i class="bi bi-key"></i> Reset Password
+        </a>
+      </div>
+    </div>
+
+    {% if user.role == 'technician' %}
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6 class="mb-0">Assigned Tasks</h6>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-1">Assigned Faults: <strong>{{ user.assigned_faults.count() }}</strong></p>
+        <p class="text-muted mb-0">Assigned Maintenance: <strong>{{ user.assigned_maintenance.count() }}</strong></p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

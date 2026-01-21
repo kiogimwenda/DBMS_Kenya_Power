@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance #{{ schedule.maintenance_id }} - Kenya Power{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">{{ schedule.title }}</h4>
+    <a href="{{ url_for('maintenance.list_maintenance') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Details Card -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Maintenance Details</span>
+                <span class="badge status-{{ schedule.status }} fs-6">{{ schedule.status.title() }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Maintenance Type</label>
+                        <p class="mb-0 fw-bold">{{ schedule.maintenance_type.title() }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Equipment</label>
+                        <p class="mb-0 fw-bold">{{ schedule.equipment_type.replace('_', ' ').title() }} {% if schedule.equipment_id %}({{ schedule.equipment_id }}){% endif %}</p>
+                    </div>
+                </div>
+
+                {% if schedule.description %}
+                <div class="mb-3">
+                    <label class="text-muted small">Description</label>
+                    <p class="mb-0">{{ schedule.description }}</p>
+                </div>
+                {% endif %}
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Location</label>
+                        <p class="mb-0">{{ schedule.location_description }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">GPS Coordinates</label>
+                        <p class="mb-0">{{ schedule.location_coordinates or 'Not provided' }}</p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="text-muted small">Scheduled Date</label>
+                        <p class="mb-0">{{ schedule.scheduled_date.strftime('%B %d, %Y') }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="text-muted small">Scheduled Time</label>
+                        <p class="mb-0">{{ schedule.scheduled_time.strftime('%H:%M') if schedule.scheduled_time else 'Not specified' }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="text-muted small">Estimated Duration</label>
+                        <p class="mb-0">{{ schedule.estimated_duration }} hours</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="text-muted small">Assigned To</label>
+                        <p class="mb-0">{{ schedule.technician.full_name if schedule.technician else 'Not assigned' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small">Assigned Team</label>
+                        <p class="mb-0">{{ schedule.assigned_team or 'Not specified' }}</p>
+                    </div>
+                </div>
+
+                {% if schedule.completion_date %}
+                <div class="alert alert-success mt-3">
+                    <strong>Completed:</strong> {{ schedule.completion_date.strftime('%B %d, %Y at %H:%M') }}
+                    {% if schedule.completion_notes %}
+                    <hr>
+                    <p class="mb-0">{{ schedule.completion_notes }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Work Logs -->
+        <div class="card mb-4">
+            <div class="card-header">Work Logs</div>
+            <div class="card-body">
+                {% for log in logs %}
+                <div class="border-bottom pb-3 mb-3 {% if loop.last %}border-0 pb-0 mb-0{% endif %}">
+                    <div class="d-flex justify-content-between mb-2">
+                        <strong>{{ log.user.full_name }}</strong>
+                        <small class="text-muted">{{ log.log_date.strftime('%b %d, %Y at %H:%M') }}</small>
+                    </div>
+                    <p class="mb-1"><strong>Work Performed:</strong> {{ log.work_performed }}</p>
+                    {% if log.parts_used %}
+                    <p class="mb-1"><strong>Parts Used:</strong> {{ log.parts_used }}</p>
+                    {% endif %}
+                    {% if log.issues_found %}
+                    <p class="mb-1"><strong>Issues Found:</strong> {{ log.issues_found }}</p>
+                    {% endif %}
+                    {% if log.recommendations %}
+                    <p class="mb-1"><strong>Recommendations:</strong> {{ log.recommendations }}</p>
+                    {% endif %}
+                    {% if log.actual_duration %}
+                    <p class="mb-0"><strong>Duration:</strong> {{ log.actual_duration }} hours</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center mb-0">No work logs recorded yet</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Add Work Log -->
+        {% if current_user.role in ['admin', 'manager', 'technician'] and schedule.status not in ['completed', 'cancelled'] %}
+        <div class="card">
+            <div class="card-header">Add Work Log</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('maintenance.add_maintenance_log', maintenance_id=schedule.maintenance_id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">Work Performed <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="work_performed" rows="3" required
+                                  placeholder="Describe the work performed..."></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Parts Used</label>
+                                <textarea class="form-control" name="parts_used" rows="2"
+                                          placeholder="List any parts used..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Issues Found</label>
+                                <textarea class="form-control" name="issues_found" rows="2"
+                                          placeholder="Any issues discovered..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label class="form-label">Recommendations</label>
+                                <textarea class="form-control" name="recommendations" rows="2"
+                                          placeholder="Any recommendations for future maintenance..."></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Actual Duration (hours)</label>
+                                <input type="number" class="form-control" name="actual_duration" min="1">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add Log
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Actions Sidebar -->
+    <div class="col-lg-4">
+        <!-- Update Status -->
+        {% if schedule.status not in ['completed', 'cancelled'] %}
+        <div class="card mb-4">
+            <div class="card-header">Update Status</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('maintenance.update_maintenance_status', maintenance_id=schedule.maintenance_id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">New Status</label>
+                        <select class="form-select" name="status" required>
+                            <option value="scheduled" {% if schedule.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                            <option value="in_progress" {% if schedule.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                            <option value="completed" {% if schedule.status == 'completed' %}selected{% endif %}>Completed</option>
+                            <option value="cancelled" {% if schedule.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                            <option value="postponed" {% if schedule.status == 'postponed' %}selected{% endif %}>Postponed</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-control" name="notes" rows="2" placeholder="Optional completion notes..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="bi bi-arrow-repeat"></i> Update Status
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Info -->
+        <div class="card">
+            <div class="card-header">Quick Info</div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">ID:</span>
+                    <span>#{{ schedule.maintenance_id }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Priority:</span>
+                    <span class="priority-{{ schedule.priority }}">{{ schedule.priority.title() }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Created:</span>
+                    <span>{{ schedule.created_at.strftime('%b %d, %Y') }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Created By:</span>
+                    <span>{{ schedule.creator.full_name }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

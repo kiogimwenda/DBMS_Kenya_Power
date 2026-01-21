@@ -1,0 +1,341 @@
+/* Kenya Power Customer Portal - Custom Styles */
+
+:root {
+    --portal-primary: #198754;
+    --portal-primary-dark: #146c43;
+    --portal-sidebar-bg: #1a472a;
+    --portal-sidebar-width: 260px;
+}
+
+/* Customer Portal Body */
+body.customer-portal {
+    background: #f8f9fa;
+}
+
+/* Portal Sidebar */
+.portal-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: var(--portal-sidebar-width);
+    background: linear-gradient(180deg, var(--portal-sidebar-bg) 0%, #0d3320 100%);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.portal-sidebar.collapsed {
+    margin-left: calc(-1 * var(--portal-sidebar-width));
+}
+
+.portal-sidebar .sidebar-header {
+    padding: 25px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.portal-sidebar .sidebar-header .logo {
+    width: 70px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.portal-sidebar .text-light-green {
+    color: #90EE90;
+}
+
+.portal-sidebar .sidebar-nav {
+    padding: 15px 0;
+}
+
+.portal-sidebar .sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.portal-sidebar .sidebar-nav .nav-link:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+    border-left-color: var(--portal-primary);
+}
+
+.portal-sidebar .sidebar-nav .nav-link.active {
+    color: #fff;
+    background: rgba(255,255,255,0.12);
+    border-left-color: #90EE90;
+}
+
+.portal-sidebar .sidebar-nav .nav-link i {
+    margin-right: 12px;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.portal-sidebar .sidebar-nav .nav-section {
+    padding: 20px 25px 8px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+.portal-sidebar .sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.2);
+}
+
+.portal-sidebar .sidebar-footer .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+}
+
+.portal-sidebar .sidebar-footer .user-info i {
+    font-size: 2.2rem;
+    color: #90EE90;
+}
+
+/* Portal Main Content */
+.portal-main-content {
+    margin-left: var(--portal-sidebar-width);
+    min-height: 100vh;
+    background: #f5f7fa;
+    transition: all 0.3s ease;
+}
+
+.portal-main-content.expanded {
+    margin-left: 0;
+}
+
+/* Portal Login Page */
+.portal-login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--portal-primary) 0%, var(--portal-sidebar-bg) 100%);
+    padding: 20px;
+}
+
+.portal-login-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 15px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+.portal-login-header {
+    text-align: center;
+    padding: 30px 30px 20px;
+    background: #fff;
+}
+
+.portal-login-header img {
+    width: 80px;
+    margin-bottom: 15px;
+}
+
+.portal-login-header h4 {
+    color: var(--portal-primary);
+    margin-bottom: 5px;
+}
+
+/* Override Bootstrap buttons for portal */
+.customer-portal .btn-success {
+    background-color: var(--portal-primary);
+    border-color: var(--portal-primary);
+}
+
+.customer-portal .btn-success:hover {
+    background-color: var(--portal-primary-dark);
+    border-color: var(--portal-primary-dark);
+}
+
+.customer-portal .btn-outline-success {
+    color: var(--portal-primary);
+    border-color: var(--portal-primary);
+}
+
+.customer-portal .btn-outline-success:hover {
+    background-color: var(--portal-primary);
+    border-color: var(--portal-primary);
+    color: #fff;
+}
+
+.customer-portal .text-success {
+    color: var(--portal-primary) !important;
+}
+
+/* Stats Cards */
+.customer-portal .stat-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.customer-portal .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+}
+
+.customer-portal .stat-card .stat-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.customer-portal .stat-card .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.customer-portal .stat-card .stat-label {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+/* Cards */
+.customer-portal .card {
+    border: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-radius: 12px;
+}
+
+.customer-portal .card-header {
+    background: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 15px 20px;
+    font-weight: 600;
+}
+
+.customer-portal .card-body {
+    padding: 20px;
+}
+
+/* Status Badges */
+.status-submitted { background: #e2e3e5; color: #41464b; }
+.status-under-review { background: #cff4fc; color: #055160; }
+.status-approved { background: #cfe2ff; color: #084298; }
+.status-rejected { background: #f8d7da; color: #58151c; }
+
+/* Quick Action Buttons */
+.customer-portal .btn-outline-warning,
+.customer-portal .btn-outline-primary,
+.customer-portal .btn-outline-success,
+.customer-portal .btn-outline-secondary {
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/* Tables */
+.customer-portal .table {
+    margin-bottom: 0;
+}
+
+.customer-portal .table th {
+    font-weight: 600;
+    border-top: none;
+}
+
+.customer-portal .table-hover tbody tr:hover {
+    background-color: rgba(25, 135, 84, 0.05);
+}
+
+/* Forms */
+.customer-portal .form-control:focus,
+.customer-portal .form-select:focus {
+    border-color: var(--portal-primary);
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);
+}
+
+/* List Groups */
+.customer-portal .list-group-item-action:hover {
+    background-color: rgba(25, 135, 84, 0.05);
+}
+
+/* Navbar */
+.customer-portal .navbar {
+    border-radius: 0;
+}
+
+/* Breadcrumb */
+.customer-portal .breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.customer-portal .breadcrumb-item a {
+    color: var(--portal-primary);
+}
+
+/* Pagination */
+.customer-portal .page-link {
+    color: var(--portal-primary);
+}
+
+.customer-portal .page-item.active .page-link {
+    background-color: var(--portal-primary);
+    border-color: var(--portal-primary);
+}
+
+/* Notification Icon Badge */
+.notification-icon {
+    min-width: 40px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .portal-sidebar {
+        margin-left: calc(-1 * var(--portal-sidebar-width));
+    }
+
+    .portal-sidebar.show {
+        margin-left: 0;
+    }
+
+    .portal-main-content {
+        margin-left: 0;
+    }
+
+    .portal-login-card {
+        margin: 0 15px;
+    }
+
+    .customer-portal .stat-card .stat-value {
+        font-size: 1.5rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .portal-sidebar,
+    .navbar {
+        display: none !important;
+    }
+
+    .portal-main-content {
+        margin-left: 0 !important;
+    }
+}

@@ -1,0 +1,129 @@
+{% extends "customer/base.html" %}
+
+{% block title %}{{ message.subject }} - Kenya Power Customer Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('customer.support') }}">Customer Support</a></li>
+                <li class="breadcrumb-item active">Conversation</li>
+            </ol>
+        </nav>
+        <h4 class="mb-0">{{ message.subject }}</h4>
+    </div>
+    <a href="{{ url_for('customer.support') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Messages
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Message Thread -->
+        <div class="message-thread">
+            <!-- Original Message -->
+            <div class="card mb-3 message-card customer-message">
+                <div class="card-header bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="bi bi-person-circle"></i> <strong>You</strong>
+                        </span>
+                        <small>{{ message.created_at.strftime('%b %d, %Y %H:%M') }}</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0" style="white-space: pre-wrap;">{{ message.message }}</p>
+                </div>
+            </div>
+
+            <!-- Replies -->
+            {% for reply in replies %}
+            <div class="card mb-3 message-card {% if reply.is_from_customer %}customer-message{% else %}support-message{% endif %}">
+                <div class="card-header {% if reply.is_from_customer %}bg-success text-white{% else %}bg-primary text-white{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>
+                            {% if reply.is_from_customer %}
+                            <i class="bi bi-person-circle"></i> <strong>You</strong>
+                            {% else %}
+                            <i class="bi bi-headset"></i> <strong>{{ reply.user.full_name if reply.user else 'Customer Service' }}</strong>
+                            {% endif %}
+                        </span>
+                        <small>{{ reply.created_at.strftime('%b %d, %Y %H:%M') }}</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0" style="white-space: pre-wrap;">{{ reply.message }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Reply Form -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-reply"></i> Reply</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('customer.reply_message', message_id=message.message_id) }}">
+                    <div class="mb-3">
+                        <textarea class="form-control" name="message" rows="4"
+                                  placeholder="Type your reply here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-send"></i> Send Reply
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Conversation Info -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Conversation Info</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Started On</small>
+                    <p class="mb-0">{{ message.created_at.strftime('%B %d, %Y') }}</p>
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted">Total Messages</small>
+                    <p class="mb-0">{{ replies|length + 1 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('customer.new_message') }}" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-envelope-plus"></i> New Conversation
+                    </a>
+                    <a href="{{ url_for('customer.support') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-list"></i> All Conversations
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.message-card {
+    border-left-width: 4px;
+}
+.customer-message {
+    border-left-color: #198754;
+}
+.support-message {
+    border-left-color: #0d6efd;
+}
+</style>
+{% endblock %}

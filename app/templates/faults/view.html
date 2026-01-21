@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Fault #{{ fault.fault_id }} - Kenya Power{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Fault #{{ fault.fault_id }}</h4>
+  <a href="{{ url_for('faults.list_faults') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back to Faults
+  </a>
+</div>
+
+<div class="row">
+  <!-- Fault Details -->
+  <div class="col-lg-8">
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Fault Details</span>
+        <span class="badge status-{{ fault.status }} fs-6">{{ fault.status.replace('_', ' ').title() }}</span>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="text-muted small">Fault Type</label>
+            <p class="mb-0 fw-bold">{{ fault.fault_type.replace('_', ' ').title() }}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="text-muted small">Severity</label>
+            <p class="mb-0"><span class="badge severity-{{ fault.severity }}">{{ fault.severity.title() }}</span></p>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="text-muted small">Description</label>
+          <p class="mb-0">{{ fault.description }}</p>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="text-muted small">Location</label>
+            <p class="mb-0">{{ fault.location_description or 'Not specified' }}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="text-muted small">GPS Coordinates</label>
+            <p class="mb-0">{{ fault.location_coordinates or 'Not provided' }}</p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="text-muted small">Reported Date</label>
+            <p class="mb-0">{{ fault.reported_date.strftime('%b %d, %Y at %H:%M') }}</p>
+          </div>
+          <div class="col-md-4">
+            <label class="text-muted small">Affected Customers</label>
+            <p class="mb-0">{{ fault.affected_customers }}</p>
+          </div>
+          <div class="col-md-4">
+            <label class="text-muted small">Related Meter</label>
+            <p class="mb-0">{{ fault.connection.meter_number if fault.connection else 'N/A' }}</p>
+          </div>
+        </div>
+
+        {% if fault.resolution_date %}
+        <div class="alert alert-success">
+          <strong>Resolved:</strong> {{ fault.resolution_date.strftime('%b %d, %Y at %H:%M') }}
+          {% if fault.resolution_notes %}
+          <hr>
+          <p class="mb-0">{{ fault.resolution_notes }}</p>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Update Timeline -->
+    <div class="card mb-4">
+      <div class="card-header">Update History</div>
+      <div class="card-body">
+        {% for update in updates %}
+        <div class="d-flex mb-3 {% if not loop.last %}border-bottom pb-3{% endif %}">
+          <div class="me-3">
+            <div class="rounded-circle bg-primary bg-opacity-10 p-2">
+              <i class="bi bi-clock-history text-primary"></i>
+            </div>
+          </div>
+          <div>
+            <div class="fw-bold">{{ update.update_type.replace('_', ' ').title() }}</div>
+            <small class="text-muted">{{ update.update_date.strftime('%b %d, %Y at %H:%M') }} by {{ update.user.full_name }}</small>
+            {% if update.notes %}
+            <p class="mb-0 mt-1">{{ update.notes }}</p>
+            {% endif %}
+            {% if update.previous_status and update.new_status %}
+            <small class="text-muted">Status changed: {{ update.previous_status }} → {{ update.new_status }}</small>
+            {% endif %}
+          </div>
+        </div>
+        {% else %}
+        <p class="text-muted text-center mb-0">No updates yet</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Add Note -->
+    <div class="card">
+      <div class="card-header">Add Note</div>
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('faults.add_fault_note', fault_id=fault.fault_id) }}">
+          <div class="mb-3">
+            <textarea class="form-control" name="notes" rows="3" placeholder="Enter your note..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Note
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions Sidebar -->
+  <div class="col-lg-4">
+    <!-- Assignment -->
+    {% if current_user.role in ['admin', 'manager'] %}
+    <div class="card mb-4">
+      <div class="card-header">Assignment</div>
+      <div class="card-body">
+        <p class="mb-2"><strong>Currently Assigned:</strong></p>
+        <p class="mb-3">{{ fault.technician.full_name if fault.technician else 'Not assigned' }}</p>
+
+        <form method="POST" action="{{ url_for('faults.assign_fault', fault_id=fault.fault_id) }}">
+          <div class="mb-3">
+            <label class="form-label">Assign to Technician</label>
+            <select class="form-select" name="technician_id" required>
+              <option value="">Select technician...</option>
+              {% for tech in technicians %}
+              <option value="{{ tech.user_id }}" {% if fault.assigned_to == tech.user_id %}selected{% endif %}>
+                {{ tech.full_name }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-person-check"></i> Assign
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Update Status -->
+    <div class="card mb-4">
+      <div class="card-header">Update Status</div>
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('faults.update_fault_status', fault_id=fault.fault_id) }}">
+          <div class="mb-3">
+            <label class="form-label">New Status</label>
+            <select class="form-select" name="status" required>
+              <option value="reported" {% if fault.status == 'reported' %}selected{% endif %}>Reported</option>
+              <option value="acknowledged" {% if fault.status == 'acknowledged' %}selected{% endif %}>Acknowledged</option>
+              <option value="assigned" {% if fault.status == 'assigned' %}selected{% endif %}>Assigned</option>
+              <option value="in_progress" {% if fault.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+              <option value="resolved" {% if fault.status == 'resolved' %}selected{% endif %}>Resolved</option>
+              <option value="closed" {% if fault.status == 'closed' %}selected{% endif %}>Closed</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea class="form-control" name="notes" rows="2" placeholder="Optional notes..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-warning w-100">
+            <i class="bi bi-arrow-repeat"></i> Update Status
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Quick Info -->
+    <div class="card">
+      <div class="card-header">Quick Info</div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Fault ID:</span>
+          <span>#{{ fault.fault_id }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Reported:</span>
+          <span>{{ fault.reported_date.strftime('%b %d, %Y') }}</span>
+        </div>
+        {% if fault.assigned_date %}
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Assigned:</span>
+          <span>{{ fault.assigned_date.strftime('%b %d, %Y') }}</span>
+        </div>
+        {% endif %}
+        {% if fault.resolution_time_hours %}
+        <div class="d-flex justify-content-between">
+          <span class="text-muted">Resolution Time:</span>
+          <span>{{ "%.1f"|format(fault.resolution_time_hours) }} hours</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

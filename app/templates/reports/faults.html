@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Fault Reports - Kenya Power{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Fault Analysis Report</h4>
+  <a href="{{ url_for('reports.index') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back to Reports
+  </a>
+</div>
+
+<!-- Date Filter -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="GET" class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" name="start_date" value="{{ start_date.strftime('%Y-%m-%d') }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" name="end_date" value="{{ end_date.strftime('%Y-%m-%d') }}">
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="card stat-card">
+      <div class="card-body text-center">
+        <div class="stat-value text-primary">{{ total_faults }}</div>
+        <div class="stat-label">Total Faults</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card">
+      <div class="card-body text-center">
+        <div class="stat-value text-success">{{ resolved_faults }}</div>
+        <div class="stat-label">Resolved</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card">
+      <div class="card-body text-center">
+        <div class="stat-value text-warning">{{ total_faults - resolved_faults }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card">
+      <div class="card-body text-center">
+        <div class="stat-value text-info">{{ avg_resolution_time }}h</div>
+        <div class="stat-label">Avg Resolution Time</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Faults by Type -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header">Faults by Type</div>
+      <div class="card-body">
+        <canvas id="faultsByTypeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Faults by Severity -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header">Faults by Severity</div>
+      <div class="card-body">
+        <canvas id="faultsBySeverityChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Daily Trend -->
+<div class="card mt-4">
+  <div class="card-header">Daily Fault Trend</div>
+  <div class="card-body">
+    <canvas id="dailyTrendChart"></canvas>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Faults by Type Chart
+  new Chart(document.getElementById('faultsByTypeChart'), {
+      type: 'doughnut',
+      data: {
+          labels: [{% for item in faults_by_type %}'{{ item[0].replace("_", " ").title() }}'{% if not loop.last %},{% endif %}{% endfor %}],
+          datasets: [{
+              data: [{% for item in faults_by_type %}{{ item[1] }}{% if not loop.last %},{% endif %}{% endfor %}],
+              backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6c757d', '#0dcaf0', '#fd7e14']
+          }]
+      },
+      options: {
+          responsive: true,
+          plugins: {
+              legend: {
+                  position: 'bottom'
+              }
+          }
+      }
+  });
+
+  // Faults by Severity Chart
+  new Chart(document.getElementById('faultsBySeverityChart'), {
+      type: 'bar',
+      data: {
+          labels: [{% for item in faults_by_severity %}'{{ item[0].title() }}'{% if not loop.last %},{% endif %}{% endfor %}],
+          datasets: [{
+              label: 'Faults',
+              data: [{% for item in faults_by_severity %}{{ item[1] }}{% if not loop.last %},{% endif %}{% endfor %}],
+              backgroundColor: ['#198754', '#ffc107', '#fd7e14', '#dc3545']
+          }]
+      },
+      options: {
+          responsive: true,
+          plugins: {
+              legend: {
+                  display: false
+              }
+          }
+      }
+  });
+
+  // Daily Trend Chart
+  new Chart(document.getElementById('dailyTrendChart'), {
+      type: 'line',
+      data: {
+          labels: [{% for item in daily_faults %}'{{ item[0] }}'{% if not loop.last %},{% endif %}{% endfor %}],
+          datasets: [{
+              label: 'Faults',
+              data: [{% for item in daily_faults %}{{ item[1] }}{% if not loop.last %},{% endif %}{% endfor %}],
+              borderColor: '#0d6efd',
+              tension: 0.1,
+              fill: false
+          }]
+      },
+      options: {
+          responsive: true,
+          plugins: {
+              legend: {
+                  display: false
+              }
+          }
+      }
+  });
+</script>
+{% endblock %}

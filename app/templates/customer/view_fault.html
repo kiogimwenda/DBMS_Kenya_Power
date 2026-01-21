@@ -1,0 +1,229 @@
+{% extends "customer/base.html" %}
+
+{% block title %}Fault #{{ fault.fault_id }} - Kenya Power Customer Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('customer.my_faults') }}">My Faults</a></li>
+                <li class="breadcrumb-item active">Fault #{{ fault.fault_id }}</li>
+            </ol>
+        </nav>
+        <h4 class="mb-0">Fault #{{ fault.fault_id }}</h4>
+    </div>
+    <span class="badge badge-status status-{{ fault.status }} fs-6">
+        {{ fault.status|replace('_', ' ')|title }}
+    </span>
+</div>
+
+<div class="row">
+    <!-- Fault Details -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Fault Details</h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <small class="text-muted">Fault Type</small>
+                        <p class="mb-0 fs-5">{{ fault.fault_type|replace('_', ' ')|title }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Severity</small>
+                        <p class="mb-0">
+                            <span class="badge severity-{{ fault.severity }}">
+                                {{ fault.severity|title }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">Description</small>
+                    <p class="mb-0">{{ fault.description }}</p>
+                </div>
+
+                {% if fault.location_description %}
+                <div class="mb-3">
+                    <small class="text-muted">Location Details</small>
+                    <p class="mb-0">{{ fault.location_description }}</p>
+                </div>
+                {% endif %}
+
+                {% if fault.connection %}
+                <div class="mb-3">
+                    <small class="text-muted">Related Connection</small>
+                    <p class="mb-0">
+                        <a href="{{ url_for('customer.view_connection', connection_id=fault.connection.connection_id) }}">
+                            {{ fault.connection.meter_number }}
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Status Timeline -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clock-history"></i> Status Updates</h6>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <!-- Current status -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <p class="mb-1"><strong>{{ fault.status|replace('_', ' ')|title }}</strong></p>
+                            <small class="text-muted">Current Status</small>
+                        </div>
+                    </div>
+
+                    {% if fault.resolution_notes %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <p class="mb-1"><strong>Resolution Notes</strong></p>
+                            <p class="mb-1">{{ fault.resolution_notes }}</p>
+                            {% if fault.resolution_date %}
+                            <small class="text-muted">{{ fault.resolution_date.strftime('%b %d, %Y %H:%M') }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Updates -->
+                    {% for update in updates %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-secondary"></div>
+                        <div class="timeline-content">
+                            <p class="mb-1">
+                                <strong>{{ update.update_type|replace('_', ' ')|title }}</strong>
+                                {% if update.new_status %}
+                                - {{ update.new_status|replace('_', ' ')|title }}
+                                {% endif %}
+                            </p>
+                            {% if update.notes %}
+                            <p class="mb-1">{{ update.notes }}</p>
+                            {% endif %}
+                            <small class="text-muted">{{ update.update_date.strftime('%b %d, %Y %H:%M') }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Reported -->
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-warning"></div>
+                        <div class="timeline-content">
+                            <p class="mb-1"><strong>Fault Reported</strong></p>
+                            <small class="text-muted">{{ fault.reported_date.strftime('%b %d, %Y %H:%M') }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Status Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Status Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Reported On</small>
+                    <p class="mb-0">{{ fault.reported_date.strftime('%B %d, %Y at %H:%M') }}</p>
+                </div>
+
+                {% if fault.assigned_date %}
+                <div class="mb-3">
+                    <small class="text-muted">Assigned On</small>
+                    <p class="mb-0">{{ fault.assigned_date.strftime('%B %d, %Y at %H:%M') }}</p>
+                </div>
+                {% endif %}
+
+                {% if fault.resolution_date %}
+                <div class="mb-3">
+                    <small class="text-muted">Resolved On</small>
+                    <p class="mb-0">{{ fault.resolution_date.strftime('%B %d, %Y at %H:%M') }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">Resolution Time</small>
+                    <p class="mb-0">
+                        {% set hours = fault.resolution_time_hours %}
+                        {% if hours %}
+                            {% if hours < 24 %}
+                                {{ hours|round(1) }} hours
+                            {% else %}
+                                {{ (hours / 24)|round(1) }} days
+                            {% endif %}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </p>
+                </div>
+                {% endif %}
+
+                {% if fault.technician %}
+                <div class="mb-0">
+                    <small class="text-muted">Assigned Technician</small>
+                    <p class="mb-0">{{ fault.technician.full_name }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Need Help? -->
+        <div class="card">
+            <div class="card-body">
+                <h6><i class="bi bi-question-circle"></i> Need Help?</h6>
+                <p class="mb-2">If you have questions about this fault report:</p>
+                <a href="{{ url_for('customer.new_message') }}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-chat-dots"></i> Contact Support
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+.timeline-marker {
+    position: absolute;
+    left: -26px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px currentColor;
+}
+.timeline-content {
+    padding-left: 10px;
+}
+</style>
+{% endblock %}

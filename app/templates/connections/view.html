@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ connection.meter_number }} - Kenya Power{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Connection: {{ connection.meter_number }}</h4>
+  <a href="{{ url_for('connections.list_connections') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Connection Details</span>
+        <span class="badge status-{{ connection.connection_status }} fs-6">{{ connection.connection_status.title() }}</span>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="text-muted small">Meter Number</label>
+            <p class="mb-0 fw-bold">{{ connection.meter_number }}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="text-muted small">Customer</label>
+            <p class="mb-0">
+              <a href="{{ url_for('customers.view_customer', customer_id=connection.customer_id) }}">
+                {{ connection.customer.full_name }}
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="text-muted small">Connection Type</label>
+            <p class="mb-0">{{ connection.connection_type.replace('_', ' ').title() }}</p>
+          </div>
+          <div class="col-md-4">
+            <label class="text-muted small">Load Capacity</label>
+            <p class="mb-0">{{ connection.load_capacity }} kVA</p>
+          </div>
+          <div class="col-md-4">
+            <label class="text-muted small">Installation Date</label>
+            <p class="mb-0">{{ connection.installation_date.strftime('%b %d, %Y') if connection.installation_date else 'Not set' }}</p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="text-muted small">Transformer ID</label>
+            <p class="mb-0">{{ connection.transformer_id or 'Not assigned' }}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="text-muted small">Feeder Line</label>
+            <p class="mb-0">{{ connection.feeder_line or 'Not assigned' }}</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <label class="text-muted small">GPS Coordinates</label>
+            <p class="mb-0">{{ connection.location_coordinates or 'Not provided' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Faults -->
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Related Faults</span>
+        <a href="{{ url_for('faults.report_fault') }}?connection_id={{ connection.connection_id }}" class="btn btn-sm btn-danger">
+          <i class="bi bi-plus"></i> Report Fault
+        </a>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Severity</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for fault in faults %}
+            <tr>
+              <td><a href="{{ url_for('faults.view_fault', fault_id=fault.fault_id) }}">#{{ fault.fault_id }}</a></td>
+              <td>{{ fault.fault_type.replace('_', ' ').title() }}</td>
+              <td><span class="badge severity-{{ fault.severity }}">{{ fault.severity.title() }}</span></td>
+              <td><span class="badge status-{{ fault.status }}">{{ fault.status.title() }}</span></td>
+              <td>{{ fault.reported_date.strftime('%b %d, %Y') }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="text-center py-3 text-muted">No faults reported</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Update Status -->
+    {% if current_user.role in ['admin', 'manager', 'technician'] %}
+    <div class="card mb-4">
+      <div class="card-header">Update Status</div>
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('connections.update_status', connection_id=connection.connection_id) }}">
+          <div class="mb-3">
+            <select class="form-select" name="status" required>
+              <option value="pending" {% if connection.connection_status == 'pending' %}selected{% endif %}>Pending</option>
+              <option value="active" {% if connection.connection_status == 'active' %}selected{% endif %}>Active</option>
+              <option value="suspended" {% if connection.connection_status == 'suspended' %}selected{% endif %}>Suspended</option>
+              <option value="disconnected" {% if connection.connection_status == 'disconnected' %}selected{% endif %}>Disconnected</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-warning w-100">
+            <i class="bi bi-arrow-repeat"></i> Update Status
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Customer Quick Info -->
+    <div class="card">
+      <div class="card-header">Customer Info</div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Account:</span>
+          <span>{{ connection.customer.account_number }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Phone:</span>
+          <span>{{ connection.customer.phone }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Type:</span>
+          <span>{{ connection.customer.customer_type.title() }}</span>
+        </div>
+        <a href="{{ url_for('customers.view_customer', customer_id=connection.customer_id) }}" class="btn btn-outline-primary w-100 mt-2">
+          View Customer
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

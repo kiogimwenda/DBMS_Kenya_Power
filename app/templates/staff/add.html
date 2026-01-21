@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Add Staff Member - Kenya Power{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Add New Staff Member</h4>
+  <a href="{{ url_for('staff.list_staff') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('staff.add_staff') }}">
+      <h6 class="text-muted mb-3">Account Information</h6>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Username <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="username" required
+                   placeholder="Enter username for login">
+            <small class="text-muted">This will be used for logging in</small>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control" name="email" required
+                   placeholder="staff@kenyapower.co.ke">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Password <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" name="password" required
+                   minlength="6" placeholder="Minimum 6 characters">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" name="confirm_password" required
+                   minlength="6" placeholder="Re-enter password">
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-4">
+      <h6 class="text-muted mb-3">Personal Information</h6>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="full_name" required
+                   placeholder="Enter full name">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" name="phone" placeholder="+254...">
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-4">
+      <h6 class="text-muted mb-3">Role Assignment</h6>
+
+      <div class="mb-4">
+        <label class="form-label">Select Role <span class="text-danger">*</span></label>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-check card p-3 mb-2">
+              <input class="form-check-input" type="radio" name="role" id="customer_service" value="customer_service" checked>
+              <label class="form-check-label" for="customer_service">
+                <strong><i class="bi bi-headset"></i> Customer Care Agent</strong>
+                <br>
+                <small class="text-muted">Handle customer inquiries, service requests, and manage customer accounts</small>
+              </label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check card p-3 mb-2">
+              <input class="form-check-input" type="radio" name="role" id="technician" value="technician">
+              <label class="form-check-label" for="technician">
+                <strong><i class="bi bi-tools"></i> Field Technician</strong>
+                <br>
+                <small class="text-muted">Handle fault repairs, installations, and maintenance work in the field</small>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-person-plus"></i> Create Staff Account
+        </button>
+        <a href="{{ url_for('staff.list_staff') }}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

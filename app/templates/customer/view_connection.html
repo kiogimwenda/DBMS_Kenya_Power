@@ -1,0 +1,142 @@
+{% extends "customer/base.html" %}
+
+{% block title %}Connection Details - Kenya Power Customer Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('customer.my_connections') }}">My Connections</a></li>
+                <li class="breadcrumb-item active">{{ connection.meter_number }}</li>
+            </ol>
+        </nav>
+        <h4 class="mb-0">Connection Details</h4>
+    </div>
+    <span class="badge badge-status status-{{ connection.connection_status }} fs-6">
+        {{ connection.connection_status|title }}
+    </span>
+</div>
+
+<div class="row">
+    <!-- Connection Info -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-plug"></i> Connection Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Meter Number</small>
+                        <p class="mb-0 fs-5"><strong>{{ connection.meter_number }}</strong></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Connection Type</small>
+                        <p class="mb-0">{{ connection.connection_type|replace('_', ' ')|title }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Load Capacity</small>
+                        <p class="mb-0">{{ connection.load_capacity }} kVA</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Installation Date</small>
+                        <p class="mb-0">{{ connection.installation_date.strftime('%B %d, %Y') if connection.installation_date else 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Transformer ID</small>
+                        <p class="mb-0">{{ connection.transformer_id or 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Feeder Line</small>
+                        <p class="mb-0">{{ connection.feeder_line or 'N/A' }}</p>
+                    </div>
+                    {% if connection.location_coordinates %}
+                    <div class="col-md-12 mb-3">
+                        <small class="text-muted">Location Coordinates</small>
+                        <p class="mb-0">{{ connection.location_coordinates }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Meter Reading History -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-speedometer2"></i> Last Meter Reading</h6>
+            </div>
+            <div class="card-body">
+                {% if connection.last_reading_date %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">Reading Date</small>
+                        <p class="mb-0">{{ connection.last_reading_date.strftime('%B %d, %Y') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Reading Value</small>
+                        <p class="mb-0 fs-5"><strong>{{ connection.last_reading_value }} kWh</strong></p>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No meter readings recorded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions & Recent Faults -->
+    <div class="col-md-4 mb-4">
+        <!-- Quick Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('customer.report_fault') }}?connection={{ connection.connection_id }}"
+                       class="btn btn-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Report Fault
+                    </a>
+                    <a href="{{ url_for('customer.new_request') }}?connection={{ connection.connection_id }}"
+                       class="btn btn-outline-primary">
+                        <i class="bi bi-file-plus"></i> Service Request
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Faults -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Recent Faults</h6>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_faults %}
+                <div class="list-group list-group-flush">
+                    {% for fault in recent_faults %}
+                    <a href="{{ url_for('customer.view_fault', fault_id=fault.fault_id) }}"
+                       class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>#{{ fault.fault_id }}</strong>
+                                <br>
+                                <small>{{ fault.fault_type|replace('_', ' ')|title }}</small>
+                            </div>
+                            <span class="badge badge-status status-{{ fault.status }}">
+                                {{ fault.status|replace('_', ' ')|title }}
+                            </span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-3 text-muted">
+                    <small>No faults reported for this connection</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

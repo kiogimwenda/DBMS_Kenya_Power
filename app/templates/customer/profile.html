@@ -1,0 +1,183 @@
+{% extends "customer/base.html" %}
+
+{% block title %}My Profile - Kenya Power Customer Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-1">My Profile</h4>
+        <p class="text-muted mb-0">View and manage your account information</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Profile Information -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person"></i> Account Information</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Account Number</small>
+                        <p class="mb-0 fs-5"><strong>{{ customer.account_number }}</strong></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Customer Type</small>
+                        <p class="mb-0">{{ customer.customer_type|title }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">Full Name</small>
+                        <p class="mb-0">{{ customer.full_name }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted">ID Number</small>
+                        <p class="mb-0">{{ customer.id_number }}</p>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <small class="text-muted">Address</small>
+                        <p class="mb-0">{{ customer.address }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted">County</small>
+                        <p class="mb-0">{{ customer.county }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted">Town</small>
+                        <p class="mb-0">{{ customer.town }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted">Postal Code</small>
+                        <p class="mb-0">{{ customer.postal_code or 'N/A' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Registration Date</small>
+                        <p class="mb-0">{{ customer.registration_date.strftime('%B %d, %Y') }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Account Status</small>
+                        <p class="mb-0">
+                            {% if customer.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Contact Information -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-pencil"></i> Update Contact Information</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('customer.update_profile') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   value="{{ customer.email or '' }}" placeholder="your.email@example.com">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                   value="{{ customer.phone }}" placeholder="07XXXXXXXX">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> Update Contact Info
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lock"></i> Change Password</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('customer.change_password') }}">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="current_password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="current_password"
+                                   name="current_password" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password"
+                                   name="new_password" required minlength="6">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password"
+                                   name="confirm_password" required minlength="6">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-key"></i> Change Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Account Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-graph-up"></i> Account Summary</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Total Connections</small>
+                    <p class="mb-0 fs-5"><strong>{{ customer.connections.count() }}</strong></p>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Active Connections</small>
+                    <p class="mb-0 fs-5"><strong>{{ customer.connections.filter_by(connection_status='active').count() }}</strong></p>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Total Faults Reported</small>
+                    <p class="mb-0 fs-5"><strong>{{ customer.reported_faults.count() }}</strong></p>
+                </div>
+                <div class="mb-0">
+                    <small class="text-muted">Service Requests</small>
+                    <p class="mb-0 fs-5"><strong>{{ customer.service_requests.count() }}</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Last Login -->
+        <div class="card">
+            <div class="card-body">
+                <h6><i class="bi bi-clock-history"></i> Last Login</h6>
+                <p class="mb-0">
+                    {% if customer.last_login %}
+                    {{ customer.last_login.strftime('%B %d, %Y at %H:%M') }}
+                    {% else %}
+                    First login
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Need Help? -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6><i class="bi bi-question-circle"></i> Need Help?</h6>
+                <p class="small mb-2">To update name, address, or other account details, please contact customer service.</p>
+                <a href="{{ url_for('customer.new_message') }}" class="btn btn-outline-primary btn-sm w-100">
+                    <i class="bi bi-chat-dots"></i> Contact Support
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

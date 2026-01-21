@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Faults - Kenya Power{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Fault Reports</h4>
+  <a href="{{ url_for('faults.report_fault') }}" class="btn btn-danger">
+    <i class="bi bi-exclamation-triangle"></i> Report Fault
+  </a>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="GET" class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" name="status">
+          <option value="">All Statuses</option>
+          <option value="reported" {% if status == 'reported' %}selected{% endif %}>Reported</option>
+          <option value="acknowledged" {% if status == 'acknowledged' %}selected{% endif %}>Acknowledged</option>
+          <option value="assigned" {% if status == 'assigned' %}selected{% endif %}>Assigned</option>
+          <option value="in_progress" {% if status == 'in_progress' %}selected{% endif %}>In Progress</option>
+          <option value="resolved" {% if status == 'resolved' %}selected{% endif %}>Resolved</option>
+          <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Severity</label>
+        <select class="form-select" name="severity">
+          <option value="">All Severities</option>
+          <option value="low" {% if severity == 'low' %}selected{% endif %}>Low</option>
+          <option value="medium" {% if severity == 'medium' %}selected{% endif %}>Medium</option>
+          <option value="high" {% if severity == 'high' %}selected{% endif %}>High</option>
+          <option value="critical" {% if severity == 'critical' %}selected{% endif %}>Critical</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Type</label>
+        <select class="form-select" name="fault_type">
+          <option value="">All Types</option>
+          <option value="power_outage" {% if fault_type == 'power_outage' %}selected{% endif %}>Power Outage</option>
+          <option value="low_voltage" {% if fault_type == 'low_voltage' %}selected{% endif %}>Low Voltage</option>
+          <option value="high_voltage" {% if fault_type == 'high_voltage' %}selected{% endif %}>High Voltage</option>
+          <option value="meter_fault" {% if fault_type == 'meter_fault' %}selected{% endif %}>Meter Fault</option>
+          <option value="transformer_fault" {% if fault_type == 'transformer_fault' %}selected{% endif %}>Transformer Fault</option>
+          <option value="line_fault" {% if fault_type == 'line_fault' %}selected{% endif %}>Line Fault</option>
+        </select>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Faults Table -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Location</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th>Reported</th>
+          <th>Assigned To</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for fault in faults.items %}
+        <tr>
+          <td><a href="{{ url_for('faults.view_fault', fault_id=fault.fault_id) }}">#{{ fault.fault_id }}</a></td>
+          <td>{{ fault.fault_type.replace('_', ' ').title() }}</td>
+          <td>{{ fault.location_description|truncate(30) if fault.location_description else 'N/A' }}</td>
+          <td><span class="badge severity-{{ fault.severity }}">{{ fault.severity.title() }}</span></td>
+          <td><span class="badge status-{{ fault.status }}">{{ fault.status.replace('_', ' ').title() }}</span></td>
+          <td>{{ fault.reported_date.strftime('%b %d, %Y %H:%M') }}</td>
+          <td>{{ fault.technician.full_name if fault.technician else '-' }}</td>
+          <td>
+            <a href="{{ url_for('faults.view_fault', fault_id=fault.fault_id) }}"
+               class="btn btn-sm btn-outline-primary" title="View">
+              <i class="bi bi-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center py-4 text-muted">No faults found</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if faults.pages > 1 %}
+  <div class="card-footer">
+    <nav>
+      <ul class="pagination mb-0 justify-content-center">
+        {% if faults.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('faults.list_faults', page=faults.prev_num, status=status, severity=severity, fault_type=fault_type) }}">Previous</a>
+        </li>
+        {% endif %}
+
+        {% for page_num in faults.iter_pages() %}
+        {% if page_num %}
+        <li class="page-item {% if page_num == faults.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('faults.list_faults', page=page_num, status=status, severity=severity, fault_type=fault_type) }}">{{ page_num }}</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+        {% endfor %}
+
+        {% if faults.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('faults.list_faults', page=faults.next_num, status=status, severity=severity, fault_type=fault_type) }}">Next</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
