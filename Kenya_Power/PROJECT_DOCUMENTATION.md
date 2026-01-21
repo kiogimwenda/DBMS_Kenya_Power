@@ -367,7 +367,7 @@ All design objectives, specifications, and expected deliverables have been fully
 
 ## 3. System Architecture
 
-### 2.1 High-Level Architecture
+### 3.1 High-Level Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -398,7 +398,7 @@ All design objectives, specifications, and expected deliverables have been fully
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Application Factory Pattern
+### 3.2 Application Factory Pattern
 
 The application uses Flask's Application Factory pattern (`create_app()`) which provides:
 
@@ -407,7 +407,7 @@ The application uses Flask's Application Factory pattern (`create_app()`) which 
 - **Blueprint Registration**: Clean separation of route modules
 - **Extension Initialization**: Proper initialization of Flask extensions
 
-### 2.3 Blueprint Architecture
+### 3.3 Blueprint Architecture
 
 The application is organized into 9 blueprints:
 
@@ -425,57 +425,8 @@ The application is organized into 9 blueprints:
 
 ---
 
-## 4. Project Directory Structure
 
-```
-Kenya_Power/
-├── app/                                    # Main application package
-│   ├── __init__.py                        # Application factory
-│   ├── models/
-│   │   └── __init__.py                    # Database models (10 models)
-│   ├── routes/
-│   │   ├── __init__.py                    # Routes package init
-│   │   ├── auth.py                        # Staff authentication
-│   │   ├── main.py                        # Home and dashboard
-│   │   ├── customers.py                   # Customer CRUD
-│   │   ├── connections.py                 # Connection CRUD
-│   │   ├── faults.py                      # Fault management
-│   │   ├── maintenance.py                 # Maintenance scheduling
-│   │   ├── reports.py                     # Analytics and reports
-│   │   ├── staff.py                       # Staff management
-│   │   └── customer.py                    # Customer portal
-│   ├── templates/                         # Jinja2 templates
-│   │   ├── base.html                      # Staff portal layout
-│   │   ├── index.html                     # Landing page
-│   │   ├── dashboard.html                 # Staff dashboard
-│   │   ├── auth/                          # Authentication templates
-│   │   ├── customers/                     # Customer management templates
-│   │   ├── connections/                   # Connection templates
-│   │   ├── faults/                        # Fault management templates
-│   │   ├── maintenance/                   # Maintenance templates
-│   │   ├── reports/                       # Report templates
-│   │   ├── staff/                         # Staff management templates
-│   │   └── customer/                      # Customer portal templates
-│   ├── static/
-│   │   ├── css/
-│   │   │   ├── style.css                  # Staff portal styles
-│   │   │   └── customer-portal.css        # Customer portal styles
-│   │   └── js/
-│   │       └── main.js                    # JavaScript functionality
-│   └── utils/
-│       ├── __init__.py                    # Utils package init
-│       ├── decorators.py                  # Role-based access control
-│       └── customer_auth.py               # Customer authentication
-├── config.py                              # Application configuration
-├── main.py                                # Entry point with CLI commands
-├── run.py                                 # Development server runner
-├── init_db.py                             # Database initialization script
-└── requirements.txt                       # Python dependencies
-```
-
----
-
-## 5. Database Design
+## 4. Database Design
 
 ### 4.1 Entity-Relationship Overview
 
@@ -845,7 +796,7 @@ submitted → under_review → approved → in_progress → completed
 
 ---
 
-## 6. Backend Implementation
+## 5. Backend Implementation
 
 ### 5.1 Application Factory (`app/__init__.py`)
 
@@ -1221,7 +1172,7 @@ def customer_login_required(f):
 
 ---
 
-## 7. Frontend Implementation
+## 6. Frontend Implementation
 
 ### 6.1 Template Architecture
 
@@ -1405,7 +1356,7 @@ function formatDate(dateString) {
 
 ---
 
-## 8. Authentication and Authorization
+## 7. Authentication and Authorization
 
 ### 7.1 Dual Authentication System
 
@@ -1460,7 +1411,7 @@ def check_password(self, password):
 
 ---
 
-## 9. Feature Documentation
+## 8. Feature Documentation
 
 ### 8.1 Customer Management
 
@@ -1559,7 +1510,7 @@ reported → acknowledged → assigned → in_progress → resolved → closed
 
 ---
 
-## 10. API Endpoints Reference
+## 9. API Endpoints Reference
 
 ### 9.1 JSON API Endpoints
 
@@ -1588,7 +1539,7 @@ reported → acknowledged → assigned → in_progress → resolved → closed
 
 ---
 
-## 11. Configuration and Deployment
+## 10. Configuration and Deployment
 
 ### 10.1 Configuration File (`config.py`)
 
@@ -1662,11 +1613,11 @@ email-validator==2.1.0
 
 ---
 
-## 12. User Guide
+## 11. User Guide
 
 This section provides clear instructions for using the Kenya Power Management System, including descriptions of key workflows.
 
-### 12.1 Getting Started
+### 11.1 Getting Started
 
 #### System Requirements
 - Modern web browser (Chrome, Firefox, Safari, Edge)
@@ -1679,23 +1630,23 @@ This section provides clear instructions for using the Kenya Power Management Sy
    - **Staff Login**: For Kenya Power employees
    - **Customer Portal**: For registered customers
 
-### 12.2 Staff Portal User Guide
+### 11.2 Staff Portal User Guide
 
-#### 12.2.1 Logging In
+#### 11.2.1 Logging In
 1. Click "Staff Login" on the landing page or navigate to `/login`
 2. Enter your username and password
 3. Optionally check "Remember me" for persistent sessions
 4. Click "Login"
 5. Upon successful login, you'll be redirected to the Dashboard
 
-#### 12.2.2 Dashboard Overview
+#### 11.2.2 Dashboard Overview
 The dashboard displays:
 - **Statistics Cards**: Total customers, active connections, pending faults, scheduled maintenance
 - **Recent Faults**: Latest 5 fault reports with quick links
 - **Upcoming Maintenance**: Next 5 scheduled maintenance tasks
 - **Quick Actions**: Buttons for common tasks
 
-#### 12.2.3 Customer Management Workflow
+#### 11.2.3 Customer Management Workflow
 **Adding a New Customer:**
 1. Navigate to Customers in the sidebar
 2. Click "Add Customer" button
@@ -1711,7 +1662,7 @@ The dashboard displays:
 3. Click on account number to view full profile
 4. View associated connections and service requests
 
-#### 12.2.4 Connection Management Workflow
+#### 11.2.4 Connection Management Workflow
 **Adding a New Connection:**
 1. Navigate to Connections in the sidebar
 2. Click "Add Connection"
@@ -1729,7 +1680,7 @@ The dashboard displays:
 3. Select new status (Active/Suspended/Disconnected)
 4. Confirm the change
 
-#### 12.2.5 Fault Management Workflow
+#### 11.2.5 Fault Management Workflow
 **Reporting a Fault (Staff):**
 1. Navigate to Faults > Report Fault
 2. Optionally select affected connection
@@ -1756,7 +1707,7 @@ The dashboard displays:
 6. Enter resolution notes describing the fix
 7. System records resolution time automatically
 
-#### 12.2.6 Maintenance Scheduling Workflow
+#### 11.2.6 Maintenance Scheduling Workflow
 **Scheduling Maintenance:**
 1. Navigate to Maintenance > Schedule Maintenance
 2. Enter maintenance title and description
@@ -1788,7 +1739,7 @@ The dashboard displays:
 7. Enter actual duration
 8. Submit the log
 
-#### 12.2.7 Reports and Analytics
+#### 11.2.7 Reports and Analytics
 **Viewing Fault Reports:**
 1. Navigate to Reports > Fault Reports
 2. Set date range using the filter
@@ -1805,7 +1756,7 @@ The dashboard displays:
 3. Monitor resolution rate
 4. Track monthly statistics
 
-#### 12.2.8 Staff Management (Admin Only)
+#### 11.2.8 Staff Management (Admin Only)
 **Adding New Staff:**
 1. Navigate to Administration > Staff Management
 2. Click "Add Staff Member"
@@ -1816,9 +1767,9 @@ The dashboard displays:
 7. Select role (Customer Care Agent/Technician)
 8. Click "Create Staff Account"
 
-### 12.3 Customer Portal User Guide
+### 11.3 Customer Portal User Guide
 
-#### 12.3.1 Registering for the Portal
+#### 11.3.1 Registering for the Portal
 1. Navigate to `/portal/register`
 2. Enter your Kenya Power account number
 3. Enter your ID number (for verification)
@@ -1828,7 +1779,7 @@ The dashboard displays:
 7. Click "Register"
 8. Upon verification, your portal account is created
 
-#### 12.3.2 Customer Dashboard
+#### 11.3.2 Customer Dashboard
 After login, view:
 - Active connections count
 - Pending faults count
@@ -1837,13 +1788,13 @@ After login, view:
 - Recent faults list
 - Recent service requests
 
-#### 12.3.3 Viewing Your Connections
+#### 11.3.3 Viewing Your Connections
 1. Click "My Connections" in sidebar
 2. View all your electrical connections
 3. See meter number, type, and status
 4. Click on a connection for details
 
-#### 12.3.4 Reporting a Fault
+#### 11.3.4 Reporting a Fault
 1. Navigate to Faults > Report Fault
 2. Select affected connection (if applicable)
 3. Choose fault type
@@ -1853,7 +1804,7 @@ After login, view:
 7. Submit the report
 8. Track progress in "My Faults"
 
-#### 12.3.5 Submitting Service Requests
+#### 11.3.5 Submitting Service Requests
 1. Navigate to Requests > New Request
 2. Select request type:
    - New Connection
@@ -1867,7 +1818,7 @@ After login, view:
 6. Submit request
 7. Track in "My Requests"
 
-#### 12.3.6 Contacting Customer Support
+#### 11.3.6 Contacting Customer Support
 1. Navigate to Support
 2. Click "New Message"
 3. Enter subject
@@ -1876,7 +1827,7 @@ After login, view:
 6. View replies in your inbox
 7. Reply to continue the conversation
 
-### 12.4 URL Quick Reference
+### 11.4 URL Quick Reference
 
 | Function | Staff Portal URL | Customer Portal URL |
 |----------|-----------------|---------------------|
@@ -1896,11 +1847,11 @@ After login, view:
 
 ---
 
-## 13. Testing and Validation
+## 12. Testing and Validation
 
 This section documents the testing procedures, results, and validation of system functionality.
 
-### 13.1 Testing Methodology
+### 12.1 Testing Methodology
 
 The system was tested using the following approaches:
 
@@ -1909,9 +1860,9 @@ The system was tested using the following approaches:
 3. **Functional Testing**: End-to-end user workflows
 4. **User Acceptance Testing**: Role-based feature verification
 
-### 13.2 Test Cases and Results
+### 12.2 Test Cases and Results
 
-#### 13.2.1 Authentication Module Tests
+#### 12.2.1 Authentication Module Tests
 
 | Test Case | Description | Expected Result | Actual Result | Status |
 |-----------|-------------|-----------------|---------------|--------|
@@ -1922,7 +1873,7 @@ The system was tested using the following approaches:
 | AUTH-05 | Customer login after registration | Redirect to customer dashboard | Redirect to customer dashboard | PASS |
 | AUTH-06 | Logout functionality | Session cleared, redirect to login | Session cleared, redirect to login | PASS |
 
-#### 13.2.2 Customer Management Tests
+#### 12.2.2 Customer Management Tests
 
 | Test Case | Description | Expected Result | Actual Result | Status |
 |-----------|-------------|-----------------|---------------|--------|
@@ -1932,7 +1883,7 @@ The system was tested using the following approaches:
 | CUST-04 | View customer connections | Related connections displayed | Related connections displayed | PASS |
 | CUST-05 | Pagination on customer list | 10 records per page | 10 records per page | PASS |
 
-#### 13.2.3 Connection Management Tests
+#### 12.2.3 Connection Management Tests
 
 | Test Case | Description | Expected Result | Actual Result | Status |
 |-----------|-------------|-----------------|---------------|--------|
@@ -1941,7 +1892,7 @@ The system was tested using the following approaches:
 | CONN-03 | Update connection status | Status changed and saved | Status changed and saved | PASS |
 | CONN-04 | View connection faults | Related faults displayed | Related faults displayed | PASS |
 
-#### 13.2.4 Fault Management Tests
+#### 12.2.4 Fault Management Tests
 
 | Test Case | Description | Expected Result | Actual Result | Status |
 |-----------|-------------|-----------------|---------------|--------|
@@ -1952,7 +1903,7 @@ The system was tested using the following approaches:
 | FAULT-05 | Resolve fault | Resolution time calculated | Resolution time displayed | PASS |
 | FAULT-06 | Technician sees only assigned | Filtered fault list | Only assigned faults shown | PASS |
 
-#### 13.2.5 Maintenance Module Tests
+#### 12.2.5 Maintenance Module Tests
 
 | Test Case | Description | Expected Result | Actual Result | Status |
 |-----------|-------------|-----------------|---------------|--------|
@@ -1962,7 +1913,7 @@ The system was tested using the following approaches:
 | MAINT-04 | Complete maintenance | Completion date recorded | Completion date and notes saved | PASS |
 | MAINT-05 | Technician assignment notification | Notification created | Notification created | PASS |
 
-#### 13.2.6 Reporting Module Tests
+#### 12.2.6 Reporting Module Tests
 
 | Test Case | Description | Expected Result | Actual Result | Status |
 |-----------|-------------|-----------------|---------------|--------|
@@ -1972,7 +1923,7 @@ The system was tested using the following approaches:
 | RPT-04 | Performance KPIs | Metrics calculated | All KPIs displayed | PASS |
 | RPT-05 | Resolution rate calculation | Percentage calculated | Correct percentage shown | PASS |
 
-#### 13.2.7 Role-Based Access Control Tests
+#### 12.2.7 Role-Based Access Control Tests
 
 | Test Case | Description | Expected Result | Actual Result | Status |
 |-----------|-------------|-----------------|---------------|--------|
@@ -1982,7 +1933,7 @@ The system was tested using the following approaches:
 | RBAC-04 | Customer service accesses reports | Access denied | Redirected with error | PASS |
 | RBAC-05 | Admin sidebar shows all sections | All sections visible | All sections visible | PASS |
 
-### 13.3 Performance Testing Results
+### 12.3 Performance Testing Results
 
 | Metric | Target | Achieved | Status |
 |--------|--------|----------|--------|
@@ -1991,7 +1942,7 @@ The system was tested using the following approaches:
 | Concurrent Users Supported | 50+ | 100+ (development server) | PASS |
 | Form Submission Response | < 1 second | ~500ms | PASS |
 
-### 13.4 Browser Compatibility
+### 12.4 Browser Compatibility
 
 | Browser | Version | Status |
 |---------|---------|--------|
@@ -2000,7 +1951,7 @@ The system was tested using the following approaches:
 | Microsoft Edge | 120+ | Compatible |
 | Safari | 17+ | Compatible |
 
-### 13.5 Challenges Encountered and Solutions
+### 12.5 Challenges Encountered and Solutions
 
 | Challenge | Description | Solution Implemented |
 |-----------|-------------|---------------------|
@@ -2010,7 +1961,7 @@ The system was tested using the following approaches:
 | Calendar Integration | Visual maintenance scheduling | Integrated FullCalendar.js with JSON API endpoint |
 | Report Date Filtering | Dynamic date ranges | Implemented query parameter filtering with SQLAlchemy |
 
-### 13.6 Known Limitations
+### 12.6 Known Limitations
 
 1. **Password Storage**: Currently using plain text for demonstration purposes. Production deployment should use password hashing (bcrypt/werkzeug).
 
@@ -2020,7 +1971,7 @@ The system was tested using the following approaches:
 
 4. **Email Notifications**: External email sending is not implemented. Integration with SMTP would be required.
 
-### 13.7 Validation Summary
+### 12.7 Validation Summary
 
 | Category | Tests | Passed | Failed | Pass Rate |
 |----------|-------|--------|--------|-----------|
@@ -2035,9 +1986,9 @@ The system was tested using the following approaches:
 
 ---
 
-## 14. Default Credentials
+## 13. Default Credentials
 
-### 14.1 Staff Accounts
+### 13.1 Staff Accounts
 
 | Username | Password | Role | Full Name | Email |
 |----------|----------|------|-----------|-------|
@@ -2047,7 +1998,7 @@ The system was tested using the following approaches:
 | tech2 | password123 | Technician | Mary Wanjiku | technician2@kenyapower.co.ke |
 | cs_agent1 | password123 | Customer Service | Sarah Kimani | csagent1@kenyapower.co.ke |
 
-### 14.2 Role Permissions Summary
+### 13.2 Role Permissions Summary
 
 | Permission | Admin | Manager | Technician | Customer Service |
 |------------|-------|---------|------------|------------------|
@@ -2062,7 +2013,7 @@ The system was tested using the following approaches:
 | View Reports | Yes | Yes | No | No |
 | Manage Staff | Yes | No | No | No |
 
-### 14.3 Quick Start Guide
+### 13.3 Quick Start Guide
 
 1. **Initialize Database**:
    ```bash
