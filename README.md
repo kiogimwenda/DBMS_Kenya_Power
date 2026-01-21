@@ -1,5 +1,4 @@
 
-.md fil# Kenya Power Electrical Systems Management Application
 
 ## Comprehensive Project Documentation
 
