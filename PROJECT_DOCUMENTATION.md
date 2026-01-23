@@ -146,20 +146,22 @@ This section evaluates the project against the specified design objectives, spec
 #### Objective 5: User Roles and Access Control
 | Requirement | Status | Implementation Details |
 |-------------|--------|------------------------|
-| Field technicians role | **MET** | `technician` role - sees only assigned faults/maintenance |
-| Customer service agents role | **MET** | `customer_service` role - full customer management access |
-| Management role | **MET** | `manager` role - full operational access + reports |
+| Field technicians role | **MET** | `technician` role - sees only assigned faults/maintenance, cannot create connections |
+| Customer service agents role | **MET** | `customer_service` role - full customer management access, view-only for connections |
+| Management role | **MET** | `manager` role - full operational access + reports + connection creation |
 | Admin role | **MET** | `admin` role - full system access including staff management |
 | Data integrity | **MET** | Role-based decorators restrict unauthorized access |
 
 **Presentation Procedure:**
 1. Login as different users and show sidebar differences:
    - **Admin**: Shows "Administration" > "Staff Management"
-   - **Manager**: Shows "Reports" section, no staff management
-   - **Technician**: Shows only assigned items, no reports
-   - **Customer Service**: Full customer access, no reports
+   - **Manager**: Shows "Reports" section, can create connections, no staff management
+   - **Technician**: Shows only assigned items, no reports, cannot create connections
+   - **Customer Service**: Full customer access, no reports, cannot create connections
 2. Try accessing `/staff/` as a manager - show "permission denied" message
-3. Login as technician and show filtered fault list (only assigned faults)
+3. Login as technician and try to access `/connections/add` - show "permission denied"
+4. Login as technician and show filtered fault list (only assigned faults)
+5. Login to customer portal and show "New Connection" option in service requests
 
 ---
 
@@ -2053,7 +2055,9 @@ The system was tested using the following approaches:
 |------------|-------|---------|------------|------------------|
 | View Dashboard | Yes | Yes | Yes | Yes |
 | Manage Customers | Full | Full | View | Full |
-| Manage Connections | Full | Full | Add/Edit | View |
+| Create Connections | Yes | Yes | No | No |
+| View Connections | Yes | Yes | Yes | Yes |
+| Update Connection Status | Yes | Yes | No | No |
 | Report Faults | Yes | Yes | Yes | Yes |
 | Assign Faults | Yes | Yes | No | No |
 | Resolve Faults | Yes | Yes | Assigned Only | No |
@@ -2061,6 +2065,8 @@ The system was tested using the following approaches:
 | Complete Maintenance | Yes | Yes | Assigned Only | No |
 | View Reports | Yes | Yes | No | No |
 | Manage Staff | Yes | No | No | No |
+
+**Note:** Customers can request new connections through the Customer Portal's Service Request feature (`/portal/requests/new` with request type "New Connection"). These requests are then reviewed and processed by managers/administrators who create the actual connection records.
 
 ### 14.3 Quick Start Guide
 
