@@ -6,10 +6,8 @@ DROP DATABASE IF EXISTS kenya_power_db;
 CREATE DATABASE kenya_power_db;
 USE kenya_power_db;
 
--- =====================================================
 -- TABLE: users
 -- Purpose: Store all system users with role-based access
--- =====================================================
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -26,10 +24,9 @@ CREATE TABLE users (
     INDEX idx_role (role)
 );
 
--- =====================================================
 -- TABLE: customers
 -- Purpose: Store customer information
--- =====================================================
+
 CREATE TABLE customers (
     customer_id INT AUTO_INCREMENT PRIMARY KEY,
     account_number VARCHAR(20) NOT NULL UNIQUE,
@@ -54,10 +51,8 @@ CREATE TABLE customers (
     INDEX idx_phone (phone)
 );
 
--- =====================================================
 -- TABLE: connections
 -- Purpose: Track electrical connections for customers
--- =====================================================
 CREATE TABLE connections (
     connection_id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
@@ -79,10 +74,9 @@ CREATE TABLE connections (
     INDEX idx_status (connection_status)
 );
 
--- =====================================================
 -- TABLE: service_requests
 -- Purpose: Handle customer service requests
--- =====================================================
+
 CREATE TABLE service_requests (
     request_id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
@@ -103,10 +97,10 @@ CREATE TABLE service_requests (
     INDEX idx_customer (customer_id)
 );
 
--- =====================================================
+
 -- TABLE: faults
 -- Purpose: Record and track reported faults
--- =====================================================
+
 CREATE TABLE faults (
     fault_id INT AUTO_INCREMENT PRIMARY KEY,
     connection_id INT,
@@ -134,10 +128,10 @@ CREATE TABLE faults (
     INDEX idx_reported_date (reported_date)
 );
 
--- =====================================================
+
 -- TABLE: fault_updates
 -- Purpose: Track updates/progress on fault resolution
--- =====================================================
+
 CREATE TABLE fault_updates (
     update_id INT AUTO_INCREMENT PRIMARY KEY,
     fault_id INT NOT NULL,
@@ -152,10 +146,10 @@ CREATE TABLE fault_updates (
     FOREIGN KEY (updated_by) REFERENCES users(user_id) ON DELETE RESTRICT
 );
 
--- =====================================================
+
 -- TABLE: maintenance_schedules
 -- Purpose: Plan and track preventive maintenance
--- =====================================================
+
 CREATE TABLE maintenance_schedules (
     maintenance_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
@@ -184,10 +178,10 @@ CREATE TABLE maintenance_schedules (
     INDEX idx_status (status)
 );
 
--- =====================================================
+
 -- TABLE: maintenance_logs
 -- Purpose: Log completed maintenance work
--- =====================================================
+
 CREATE TABLE maintenance_logs (
     log_id INT AUTO_INCREMENT PRIMARY KEY,
     maintenance_id INT NOT NULL,
@@ -203,10 +197,10 @@ CREATE TABLE maintenance_logs (
     FOREIGN KEY (logged_by) REFERENCES users(user_id) ON DELETE RESTRICT
 );
 
--- =====================================================
+
 -- TABLE: notifications
 -- Purpose: Store system notifications
--- =====================================================
+
 CREATE TABLE notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -223,10 +217,10 @@ CREATE TABLE notifications (
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
 );
 
--- =====================================================
+
 -- TABLE: customer_messages
 -- Purpose: Customer service messaging for portal users
--- =====================================================
+
 CREATE TABLE customer_messages (
     message_id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
@@ -245,10 +239,10 @@ CREATE TABLE customer_messages (
     INDEX idx_parent (parent_message_id)
 );
 
--- =====================================================
+
 -- TABLE: audit_log
 -- Purpose: Track all system changes for security
--- =====================================================
+
 CREATE TABLE audit_log (
     log_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -265,9 +259,9 @@ CREATE TABLE audit_log (
     INDEX idx_user (user_id)
 );
 
--- =====================================================
+
 -- Create Views for Reporting
--- =====================================================
+
 
 -- View: Active Faults Summary
 CREATE VIEW v_active_faults AS
